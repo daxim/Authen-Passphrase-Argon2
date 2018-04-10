@@ -75,4 +75,26 @@ sub as_rfc2307 {
     return '{ARGON2}' . encode_base64( $self->_hash, '' );
 }
 
+=head1 SYNOPSIS
+
+use Authen::Passphrase::Argus2;
+
+# hash a password
+my $ppr = Authen::Passphrase::Argon2->new({
+    passphrase  => 'password1',
+    salt        => 'longenoughsalt',
+    t_cost      => 16,
+    m_factor    => "4M",
+    parallelism => 1,
+    tag_size    => 16,
+});
+
+my $crypt = $ppr->as_crypt;
+my $rfc2307 = $ppr->as_rfc2307;
+
+my $ppr = Authen::Passphrase->from_crypt($crypt);
+my $ppr = Authen::Passphrase->from_rfc2307($rfc2307);
+
+=cut
+
 1;
