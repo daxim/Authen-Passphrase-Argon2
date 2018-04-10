@@ -8,7 +8,6 @@ package Authen::Passphrase::Argon2;
 use parent qw( Authen::Passphrase Class::Accessor::Fast );
 use Carp;
 use Crypt::Argon2 qw( argon2id_pass argon2id_verify );
-use MIME::Base64 qw( decode_base64 encode_base64 );
 
 __PACKAGE__->mk_accessors(qw( _hash ));
 __PACKAGE__->mk_ro_accessors(
@@ -52,12 +51,10 @@ sub from_crypt {
 
 sub from_rfc2307 {
     my ( $class, $rfc2307 ) = @_;
-    croak "Invalid Argon2 RFC2307"
-        unless $rfc2307 =~ m/^{ARGON2}([A-Za-z0-9+\/=]+)$/;
+    croak "invalid Argon2 RFC2307 format"
+        unless $rfc2307 =~ m/^{ARGON2}(.*)$/;
 
-    my $hash = decode_base64 $1;
-
-    return $class->from_crypt($hash);
+    return $class->from_crypt($1);
 }
 
 sub match {
@@ -72,7 +69,7 @@ sub as_crypt {
 
 sub as_rfc2307 {
     my $self = shift;
-    return '{ARGON2}' . encode_base64( $self->_hash, '' );
+    return '{ARGON2}' . $self->_hash;
 }
 
 =head1 SYNOPSIS

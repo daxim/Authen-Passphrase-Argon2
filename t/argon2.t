@@ -20,7 +20,7 @@ is $x->as_crypt,
     '$argon2id$v=19$m=4096,t=16,p=1$bG9uZ2Vub3VnaHNhbHQ$5zFJ2PN5Lsk1GLvB3FrSyg',
     'as_crypt';
 is $x->as_rfc2307,
-    '{ARGON2}JGFyZ29uMmlkJHY9MTkkbT00MDk2LHQ9MTYscD0xJGJHOXVaMlZ1YjNWbmFITmhiSFEkNXpGSjJQTjVMc2sxR0x2QjNGclN5Zw==',
+    '{ARGON2}$argon2id$v=19$m=4096,t=16,p=1$bG9uZ2Vub3VnaHNhbHQ$5zFJ2PN5Lsk1GLvB3FrSyg',
     'as_rfc2307';
 
 subtest 'from_crypt' => sub {
@@ -38,7 +38,7 @@ subtest 'from_crypt' => sub {
 
 subtest 'from_rfc2307' => sub {
     ok my $y = Authen::Passphrase::Argon2->from_rfc2307(
-        '{ARGON2}JGFyZ29uMmlkJHY9MTkkbT00MDk2LHQ9MTYscD0xJGJHOXVaMlZ1YjNWbmFITmhiSFEkNXpGSjJQTjVMc2sxR0x2QjNGclN5Zw=='
+        '{ARGON2}$argon2id$v=19$m=4096,t=16,p=1$bG9uZ2Vub3VnaHNhbHQ$5zFJ2PN5Lsk1GLvB3FrSyg'
     ), 'from_rfc2307';
 
     is $y->m_factor,    4096, 'm_factor ok';
