@@ -100,6 +100,12 @@ Argon2 key derivation function, which is the most secure one available
 at this time (spring 2018).
 The Argon2id variant is used via the L<Crypt::Argon2> module.
 
+=head1 METHODS
+
+=head2 new
+
+See L</SYNOPSIS>.
+
 =cut
 
 1;
