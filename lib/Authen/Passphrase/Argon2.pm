@@ -8,6 +8,9 @@ package Authen::Passphrase::Argon2;
 use parent 'Authen::Passphrase';
 use Carp;
 use Crypt::Argon2 qw( argon2id_pass argon2id_verify );
+use Syntax::Construct qw( ?<> /a );
+
+our @_attr = qw(passphrase salt t_cost m_factor parallelism tag_size);
 
 sub new {
     my $class = shift;
@@ -20,16 +23,11 @@ sub new {
     }
 
     if ( !defined $self->{_hash} ) {
-        croak "passphrase not set"  unless defined $self->{passphrase};
-        croak "salt not set"        unless defined $self->{salt};
-        croak "t_cost not set"      unless defined $self->{t_cost};
-        croak "m_factor not set"    unless defined $self->{m_factor};
-        croak "parallelism not set" unless defined $self->{parallelism};
-        croak "tag_size not set"    unless defined $self->{tag_size};
+        for (@_attr) {
+            croak "$_ not set" unless defined $self->{$_};
+        }
 
-        my $hash = argon2id_pass(
-            $self->{passphrase}, $self->{salt},        $self->{t_cost},
-            $self->{m_factor},   $self->{parallelism}, $self->{tag_size} );
+        my $hash = argon2id_pass(map {$self->{$_}} @_attr);
         $self->{_hash} = $hash;
     }
 
@@ -40,22 +38,24 @@ sub from_crypt {
     my ( $class, $crypt ) = @_;
 
     croak "invalid Argon2 crypt format"
-        unless $crypt =~ m/^\$argon2id\$v=\d+\$m=(\d+),t=(\d+),p=(\d+)\$/;
+        unless $crypt =~ m/^
+            \$argon2id
+            \$v=\d+
+            \$m=(?<m_factor>\d+),
+            t=(?<t_cost>\d+),
+            p=(?<parallelism>\d+)
+            \$
+        /ax;
 
-    return $class->new(
-        m_factor    => $1,
-        t_cost      => $2,
-        parallelism => $3,
-        _hash       => $crypt,
-    );
+    return $class->new(%+, _hash => $crypt);
 }
 
 sub from_rfc2307 {
     my ( $class, $rfc2307 ) = @_;
-    croak "invalid Argon2 RFC2307 format"
-        unless $rfc2307 =~ m/^{ARGON2}(.*)$/;
+    my ($hash) = $rfc2307 =~ m/^{ARGON2}(.*)$/;
+    croak "invalid Argon2 RFC2307 format" unless $hash;
 
-    return $class->from_crypt($1);
+    return $class->from_crypt($hash);
 }
 
 sub match {
