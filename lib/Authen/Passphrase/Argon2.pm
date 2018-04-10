@@ -92,6 +92,13 @@ my $rfc2307 = $ppr->as_rfc2307;
 my $ppr = Authen::Passphrase->from_crypt($crypt);
 my $ppr = Authen::Passphrase->from_rfc2307($rfc2307);
 
+=head1 DESCRIPTION
+
+This modules allows L<Authen::Passphrase> compatible modules to use the
+Argon2 key derivation function, which is the most secure one available
+at this time (spring 2018).
+The Argon2id variant is used via the L<Crypt::Argon2> module.
+
 =cut
 
 1;
